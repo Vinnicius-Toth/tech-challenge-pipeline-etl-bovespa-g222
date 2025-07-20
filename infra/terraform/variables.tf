@@ -1,5 +1,5 @@
 variable "bucket_name" {
-  description = "The name of the S3 bucket"
+  description = "bucket-ingestao-bovespa-g222"
   type        = string
 }
 
