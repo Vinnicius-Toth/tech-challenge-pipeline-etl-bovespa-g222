@@ -7,10 +7,10 @@ import time
 import csv
 
 # Quadrimestre - Carteira teórica do IBovespa válida para o quadrimestre Mai. a Ago. 2025
-url = "https://sistemaswebb3-listados.b3.com.br/indexPage/theorical/IBOV?language=pt-br"
+# url = "https://sistemaswebb3-listados.b3.com.br/indexPage/theorical/IBOV?language=pt-br"
 
 # Diário - Carteira Teórica do IBovespa válida para 21/07/25
-# url = "https://sistemaswebb3-listados.b3.com.br/indexPage/day/IBOV?language=pt-br"
+url = "https://sistemaswebb3-listados.b3.com.br/indexPage/day/IBOV?language=pt-br"
 
 service = Service()  # Use o caminho do chromedriver se necessário
 driver = webdriver.Chrome(service=service)
