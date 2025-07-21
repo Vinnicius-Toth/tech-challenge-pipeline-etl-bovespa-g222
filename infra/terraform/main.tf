@@ -1,4 +1,4 @@
-resource "aws_s3_bucket" "bucket-ingestao-etl" {
+resource "aws_s3_bucket" "bucket_ingestao_etl" {
   bucket = var.bucket_ingestao_etl_name
   acl    = var.acl
 
