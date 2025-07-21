@@ -2,7 +2,7 @@ resource "aws_s3_bucket" "bucket-ingestao-etl" {
   bucket = var.bucket_ingestao_etl_name
   acl    = var.acl
 
-  versioning = {
+  versioning {
     enabled = true
   }
 
