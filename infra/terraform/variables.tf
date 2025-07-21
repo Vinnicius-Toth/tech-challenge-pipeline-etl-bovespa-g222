@@ -1,7 +1,13 @@
-variable "bucket_name" {
+variable "bucket_ingestao_etl_name" {
+  description = "The name of the S3 bucket for ETL ingestion"
+  type        = string
+  default     = "bucket-techchallenge-ingestao-bovespa-g222"
+}
+
+variable "bucket_states_terraform_name" {
   description = "The name of the S3 bucket"
   type        = string
-  default     = "bucket-ingestao-bovespa-g222"
+  default     = "bucket-techchallenge-states-terraform-g222"
 }
 
 variable "region" {
