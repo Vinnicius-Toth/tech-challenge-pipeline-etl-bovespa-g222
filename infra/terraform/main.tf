@@ -1,14 +1,23 @@
-resource "aws_s3_bucket" "my_bucket" {
-  bucket = var.bucket_name
+resource "aws_s3_bucket" "bucket_ingestao_etl" {
+  bucket = var.bucket_ingestao_etl_name
   acl    = var.acl
 
-  tags = {
-    Name        = var.bucket_name
-    Environment = var.environment
+  versioning {
+    enabled = true
   }
 
-    lifecycle {
-    prevent_destroy = true
+  tags = {
+    Name        = var.bucket_ingestao_etl_name
+    Environment = var.environment
   }
 }
 
+# Configure the S3 bucket for storing Terraform state files
+terraform {
+  backend "s3" {
+    bucket = "bucket-techchallenge-states-terraform-g222"
+    key    = "infra/terraform.tfstate"
+    region = "us-east-1"
+    encrypt = true
+  }
+}
