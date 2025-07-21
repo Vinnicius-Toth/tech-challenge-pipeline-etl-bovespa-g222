@@ -1,7 +1,7 @@
 variable "bucket_name" {
   description = "The name of the S3 bucket"
   type        = string
-  default     = "bucket-techchallenge-ingestao-etl-bovespa-vinnicius-toth"
+  default     = "bucket-ingestao-bovespa-g222"
 }
 
 variable "region" {
