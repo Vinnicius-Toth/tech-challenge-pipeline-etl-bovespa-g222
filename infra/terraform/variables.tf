@@ -1,6 +1,7 @@
 variable "bucket_name" {
-  description = "bucket-ingestao-bovespa-g222"
+  description = "The name of the S3 bucket"
   type        = string
+  default     = "bucket-ingestao-bovespa-g222"
 }
 
 variable "region" {
@@ -13,4 +14,10 @@ variable "acl" {
   description = "The canned ACL to apply to the bucket"
   type        = string
   default     = "private"
+}
+
+variable "environment" {
+  description = "The environment to created services"
+  type        = string
+  default     = "prod"
 }
