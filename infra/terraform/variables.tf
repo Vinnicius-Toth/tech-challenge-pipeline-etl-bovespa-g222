@@ -15,3 +15,9 @@ variable "acl" {
   type        = string
   default     = "private"
 }
+
+variable "environment" {
+  description = "The environment to created services"
+  type        = string
+  default     = "prod"
+}
