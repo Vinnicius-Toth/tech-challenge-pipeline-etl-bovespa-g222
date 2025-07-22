@@ -6,6 +6,7 @@ resource "aws_s3_bucket" "bucket_ingestao_etl" {
   versioning {
     enabled = true
   }
+}
 
 # Bucket artifacts for Lambda functions
 resource "aws_s3_bucket" "lambda_artifacts" {
