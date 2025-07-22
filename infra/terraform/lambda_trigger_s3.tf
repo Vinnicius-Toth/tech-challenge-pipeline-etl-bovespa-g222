@@ -6,7 +6,7 @@ resource "aws_lambda_function" "process_s3_event" {
   timeout       = 10
 
   s3_bucket         = var.bucket_artifact_name
-  s3_key            = "lambda/lambda_function_payload.zip"
+  s3_key            = "lambdas/process_s3_event.zip"
 }
 
 resource "aws_lambda_permission" "allow_s3" {
