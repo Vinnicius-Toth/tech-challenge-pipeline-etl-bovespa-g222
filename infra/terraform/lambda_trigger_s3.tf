@@ -1,6 +1,6 @@
 resource "aws_lambda_function" "process_s3_event" {
   function_name = "lambda-trigger-glue-job"
-  role          = "arn:aws:lambda:us-east-1:569358226624:function:ModLabRole"
+  role          = "arn:aws:iam::569358226624:role/ModLabRole"
   handler       = "index.handler"
   runtime       = "python3.9"
   timeout       = 10
