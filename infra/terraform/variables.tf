@@ -1,7 +1,14 @@
+# Buckets S3
 variable "bucket_ingestao_etl_name" {
   description = "The name of the S3 bucket for ETL ingestion"
   type        = string
   default     = "bucket-techchallenge-ingestao-bovespa-g222"
+}
+
+variable "bucket_artifact_name" {
+  description = "The name of the S3 bucket for ETL ingestion"
+  type        = string
+  default     = "bucket-techchallenge-artifacts-g222"
 }
 
 variable "bucket_states_terraform_name" {
@@ -10,6 +17,7 @@ variable "bucket_states_terraform_name" {
   default     = "bucket-techchallenge-states-terraform-g222"
 }
 
+# Configuracoes gerais
 variable "region" {
   description = "The AWS region where the S3 bucket will be created"
   type        = string

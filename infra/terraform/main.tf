@@ -1,17 +1,3 @@
-resource "aws_s3_bucket" "bucket_ingestao_etl" {
-  bucket = var.bucket_ingestao_etl_name
-  acl    = var.acl
-
-  versioning {
-    enabled = true
-  }
-
-  tags = {
-    Name        = var.bucket_ingestao_etl_name
-    Environment = var.environment
-  }
-}
-
 # Configure the S3 bucket for storing Terraform state files
 terraform {
   backend "s3" {
