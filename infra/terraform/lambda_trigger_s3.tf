@@ -5,8 +5,8 @@ resource "aws_lambda_function" "process_s3_event" {
   runtime       = "python3.9"
   timeout       = 10
 
-  filename         = "lambda_function_payload.zip"
-  source_code_hash = filebase64sha256("lambda_function_payload.zip")
+  s3_bucket         = var.bucket_artifact_name
+  s3_key            = "lambda/lambda_function_payload.zip"
 }
 
 resource "aws_lambda_permission" "allow_s3" {
