@@ -3,51 +3,93 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from bs4 import BeautifulSoup
-import time
-import csv
+from dotenv import load_dotenv
+import boto3
+import pandas as pd
+import time, os
+from io import StringIO
 
-# Quadrimestre - Carteira teórica do IBovespa válida para o quadrimestre Mai. a Ago. 2025
-# url = "https://sistemaswebb3-listados.b3.com.br/indexPage/theorical/IBOV?language=pt-br"
+def extract_selenium_scrapping(ingestion_type):
+    if ingestion_type == 'daily':
+        url = "https://sistemaswebb3-listados.b3.com.br/indexPage/day/IBOV?language=pt-br"
+    elif ingestion_type == 'quarter':
+        url = "https://sistemaswebb3-listados.b3.com.br/indexPage/theorical/IBOV?language=pt-br"
+    
+    service = Service()  
+    driver = webdriver.Chrome(service=service)
+    driver.get(url)
+    time.sleep(3)  # Aguarde o carregamento inicial
+    
+    # Seleciona o máximo de itens (120) no select
+    select_element = driver.find_element(By.ID, "selectPage")
+    select = Select(select_element)
+    select.select_by_visible_text("120")
+    time.sleep(3)  # Aguarde a página atualizar
+    
+    html = driver.page_source
+    driver.quit()
+    soup = BeautifulSoup(html, "html.parser")
+    table = soup.find("table", class_="table table-responsive-sm table-responsive-md")
 
-# Diário - Carteira Teórica do IBovespa válida para 21/07/25
-url = "https://sistemaswebb3-listados.b3.com.br/indexPage/day/IBOV?language=pt-br"
+    return table
 
-service = Service()  # Use o caminho do chromedriver se necessário
-driver = webdriver.Chrome(service=service)
-driver.get(url)
-time.sleep(3)  # Aguarde o carregamento inicial
+def extract_table_data(table, ingestion_type):
+    """
+    Extrai a tabela HTML para DataFrame e adiciona coluna tipo_ingestao
+    """
+    header = [th.get_text(strip=True) for th in table.find("thead").find_all("th")]
+    rows = table.find("tbody").find_all("tr")
+    data = []
+    for row in rows:
+        cols = row.find_all("td")
+        if cols:
+            data.append([col.get_text(strip=True) for col in cols])
+    df = pd.DataFrame(data, columns=header)
+    df["ingestion_type"] = ingestion_type
+    return df
 
-# Seleciona o máximo de itens (120) no select
-select_element = driver.find_element(By.ID, "selectPage")
-select = Select(select_element)
-select.select_by_visible_text("120")
-time.sleep(3)  # Aguarde a página atualizar
+def save_dataframe_to_s3(df, bucket, path_s3):
+    load_dotenv() 
+    aws_access_key = os.getenv("AWS_ACCESS_KEY_ID")
+    aws_secret_key = os.getenv("AWS_SECRET_ACCESS_KEY")
+    aws_session_token = os.getenv("AWS_SESSION_TOKEN")
 
-html = driver.page_source
-driver.quit()
+    s3 = boto3.client(
+        's3',
+        aws_access_key_id=aws_access_key,
+        aws_secret_access_key=aws_secret_key,
+        aws_session_token=aws_session_token
+    )
 
-soup = BeautifulSoup(html, "html.parser")
-tabela = soup.find("table", class_="table table-responsive-sm table-responsive-md")
+    csv_buffer = StringIO()
+    df.to_csv(csv_buffer, index=False)
 
-import os
-# ...existing code...
+    s3.put_object(
+        Bucket=bucket,
+        Key=path_s3,
+        Body=csv_buffer.getvalue()
+    )
 
-if tabela:
-    cabecalhos = [th.get_text(strip=True) for th in tabela.find("thead").find_all("th")]
-    linhas = tabela.find("tbody").find_all("tr")
-    dados = []
-    for linha in linhas:
-        colunas = linha.find_all("td")
-        if colunas:
-            dados.append([coluna.get_text(strip=True) for coluna in colunas])
-    # Garante que o diretório de saída existe
-    output_dir = os.path.join(os.path.dirname(__file__), '..', 'output')
-    os.makedirs(output_dir, exist_ok=True)
-    output_path = os.path.join(output_dir, "IBOV_dados.csv")
-    with open(output_path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        writer.writerow(cabecalhos)
-        writer.writerows(dados)
-    print(f"Dados salvos em {output_path}")
-else:
-    print("Tabela não encontrada.")
+def process_tables_and_upload(bucket_name, path_s3):
+    """
+    Processa as duas tabelas HTML, junta e salva no S3
+    """
+
+    ## Extract
+    table_daily = extract_selenium_scrapping("daily")
+    table_quarter = extract_selenium_scrapping("quarter")
+    
+    ## Transform
+    df_daily = extract_table_data(table_daily, "daily")
+    df_quarter = extract_table_data(table_quarter, "quarter")
+    df_final = pd.concat([df_daily, df_quarter], ignore_index=True)
+
+    ## Load
+    save_dataframe_to_s3(df_final, bucket_name, path_s3)
+
+# Parameters
+bucket_s3 = 'bucket-techchallenge-ingestao-bovespa-g222'
+path_s3 = 'raw_file.csv'
+
+# Start Ingestion
+process_tables_and_upload(bucket_s3, path_s3)
