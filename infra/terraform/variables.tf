@@ -17,6 +17,12 @@ variable "bucket_states_terraform_name" {
   default     = "bucket-techchallenge-states-terraform-g222"
 }
 
+variable "glue_job_name" {
+  description = "The name of glue job"
+  type        = string
+  default     = "glue_job_etl_ingestion_refined"
+}
+
 # Configuracoes gerais
 variable "region" {
   description = "The AWS region where the S3 bucket will be created"
