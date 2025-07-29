@@ -1,5 +1,5 @@
 resource "aws_glue_job" "glue_job_etl" {
-  name     = ${var.glue_job_name}
+  name     = var.glue_job_name
   role_arn = "arn:aws:iam::569358226624:role/LabRole"
 
   command {
@@ -18,7 +18,7 @@ resource "aws_glue_job" "glue_job_etl" {
     "--enable-continuous-cloudwatch-log" = "true"
     "--job-language"      = "python"
     "--job-bookmark-option" = "job-bookmark-disable"
-    "--job_name"            = ${var.glue_job_name}
+    "--job_name"            = var.glue_job_name
     "--bucket_ingestion"  = "s3://${var.bucket_ingestao_etl}"
   }
   execution_class = "STANDARD" 
