@@ -46,11 +46,11 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
       
-      # Etapa de zip e upload só na branch main
+      # Step zip and upload Lambda function
       - name: Zip Lambda Function
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          cd lambda
+          cd services/lambda
           zip -r ../lambda_function_payload.zip ./*
           cd ..
 
@@ -58,6 +58,17 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           aws s3 cp lambda_function_payload.zip s3://bucket-techchallenge-artifacts-g222/lambdas/process_s3_event.zip
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+
+      # Step upload Glue Job in Bucket S3
+      - name: Upload Glue Job to S3
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          cd services/glue/app/src
+          aws s3 cp main.py s3://bucket-techchallenge-artifacts-g222/glue/
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
