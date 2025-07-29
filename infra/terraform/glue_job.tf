@@ -9,7 +9,6 @@ resource "aws_glue_job" "glue_job_etl" {
   }
 
   glue_version      = "5.0"
-  max_capacity      = 2.0
   number_of_workers = 2
   worker_type       = "G.1X"                 
 
