@@ -72,7 +72,7 @@ def save_dataframe_to_s3(df, bucket, path_s3):
 
 def process_tables_and_upload(bucket_name, path_s3):
     """
-    Processa as duas tabelas HTML, junta e salva no S3
+    Execute ingestion ETL in raw path
     """
 
     ## Extract
