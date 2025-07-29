@@ -1,5 +1,5 @@
-resource "aws_glue_job" "meu_glue_job" {
-  name     = "meu-glue-job"
+resource "aws_glue_job" "glue_job_etl" {
+  name     = "glue_job_etl_ingestion_refined"
   role_arn = "arn:aws:iam::569358226624:role/LabRole"
 
   command {
