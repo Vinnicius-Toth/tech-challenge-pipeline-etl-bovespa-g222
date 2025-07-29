@@ -1,5 +1,5 @@
 resource "aws_glue_job" "glue_job_etl" {
-  name     = "glue_job_etl_ingestion_refined"
+  name     = ${var.glue_job_name}
   role_arn = "arn:aws:iam::569358226624:role/LabRole"
 
   command {
@@ -8,9 +8,18 @@ resource "aws_glue_job" "glue_job_etl" {
     python_version  = "3"
   }
 
-  max_retries      = 0
-  glue_version     = "4.0"
+  glue_version      = "5.0"
+  max_capacity      = 2.0
   number_of_workers = 2
-  worker_type      = "G.1X"
-  timeout          = 10
+  worker_type       = "G.1X"                 
+
+  default_arguments = {
+    "--enable-metrics"    = "true"
+    "--enable-continuous-cloudwatch-log" = "true"
+    "--job-language"      = "python"
+    "--job-bookmark-option" = "job-bookmark-disable"
+    "--job_name"            = ${var.glue_job_name}
+    "--bucket_ingestion"  = "s3://${var.bucket_ingestao_etl}"
+  }
+  execution_class = "STANDARD" 
 }
