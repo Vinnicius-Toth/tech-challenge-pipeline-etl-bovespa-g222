@@ -19,7 +19,7 @@ resource "aws_glue_job" "glue_job_etl" {
     "--job-language"      = "python"
     "--job-bookmark-option" = "job-bookmark-disable"
     "--job_name"            = var.glue_job_name
-    "--bucket_ingestion"  = "s3://${var.bucket_ingestao_etl}"
+    "--bucket_ingestion"  = "s3://${var.bucket_ingestao_etl_name}"
   }
   execution_class = "STANDARD" 
 }
