@@ -3,7 +3,7 @@ resource "aws_glue_job" "glue_job_etl" {
   role_arn = "arn:aws:iam::569358226624:role/LabRole"
 
   command {
-    name            = "glue_job_etl_ingestion_refined"
+    name            = "glueetl"
     script_location = "s3://${var.bucket_artifact_name}/glue/app/src/main.py"
     python_version  = "3"
   }

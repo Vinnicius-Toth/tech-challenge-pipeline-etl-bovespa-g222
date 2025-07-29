@@ -1,46 +1,63 @@
 import sys
-from awsglue.transforms import *
+from awsglue.context import GlueContext
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from awsglue.context import GlueContext
-from awsglue.job import Job
+from pyspark.sql.functions import col
 
-# Lê os argumentos de job
-args = getResolvedOptions(sys.argv, ['JOB_NAME'])
 
-# Inicializa contexto Spark e Glue
-sc = SparkContext()
-glueContext = GlueContext(sc)
-spark = glueContext.spark_session
-job = Job(glueContext)
+## Extract
+def read_csv_files(spark, path_s3):
+    df = spark.read.\
+        option("header", "true").\
+        option("inferSchema", "true").\
+        csv(path_s3)
+    
+    return df
 
-# Inicia o job
-job.init(args['JOB_NAME'], args)
 
-# Exemplo: leitura de um arquivo CSV do S3
-datasource = glueContext.create_dynamic_frame.from_options(
-    format_options={"withHeader": True},
-    connection_type="s3",
-    format="csv",
-    connection_options={
-        "paths": ["s3://meu-bucket-exemplo/input/meu-arquivo.csv"],
-        "recurse": True
-    },
-    transformation_ctx="datasource"
-)
+## Transform
 
-# Exemplo: transformação opcional (convertendo para DataFrame e exibindo)
-df = datasource.toDF()
-df.show()
+## Load
 
-# Exemplo: salvando resultado transformado no S3 em outro path
-datasink = glueContext.write_dynamic_frame.from_options(
-    frame=datasource,
-    connection_type="s3",
-    connection_options={"path": "s3://meu-bucket-exemplo/output/"},
-    format="csv",
-    transformation_ctx="datasink"
-)
+##Utils
+def create_session():
+    sc = SparkContext()
+    glueContext = GlueContext(sc)
+    spark = glueContext.spark_session
 
-# Finaliza o job
-job.commit()
+
+    return spark, glueContext
+
+def main():
+    print('inicio')
+    parameters = [
+        'JOB_NAME',
+        'bucket_ingestion' 
+    ]
+    args = getResolvedOptions(sys.argv, parameters)
+    
+    # Parameters
+    print('Parameters')
+    job_name = args['JOB_NAME']
+    bucket_ingestion = args['bucket_ingestion']
+
+    # Start
+    print('sessao')
+    spark, glueContext = create_session()
+    # Extract 
+    print('leitura')
+    df = read_csv_files(spark, bucket_ingestion)
+    df.show()
+
+    # Transform
+
+    # Load
+
+    # End
+
+
+     
+if __name__ == '__main__':
+    main()
+
+
