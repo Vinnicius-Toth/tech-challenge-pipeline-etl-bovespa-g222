@@ -5,7 +5,3 @@ output "bucket_ingestao_etl_name" {
 output "bucket_arn" {
   value = aws_s3_bucket.bucket_ingestao_etl.arn
 }
-
-# output "lambda_function_name" {
-#   value = aws_lambda_function.process_s3_event.function_name
-# }
