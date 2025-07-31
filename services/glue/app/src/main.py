@@ -207,6 +207,7 @@ class Logs:
 
     def error(self, msg):
         self.logger.error(msg)
+        raise Exception(msg)
     
 
 
