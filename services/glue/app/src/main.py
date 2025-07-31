@@ -2,6 +2,7 @@ import sys
 import re
 import unicodedata
 import boto3
+import time
 import logging
 import pytz
 from awsglue.context import GlueContext
@@ -10,7 +11,7 @@ from awsglue.dynamicframe import DynamicFrame
 from pyspark.context import SparkContext
 from pyspark.sql.functions import col, lit
 from pyspark.sql.types import StringType, IntegerType, DoubleType, BooleanType, DateType, TimestampType
-from pyspark.sql.functions import regexp_replace
+from pyspark.sql.functions import regexp_replace, trim
 from datetime import datetime
 
 # Log config
@@ -102,10 +103,18 @@ def cast_columns(df, schema):
         for col_name, glue_type in schema.items():
             if col_name in df.columns:
                 spark_type = glue_type_to_spark(glue_type)
+                # Cast qtde_teorica
                 if col_name == "qtde_teorica":
-                    df = df.withColumn(col_name, regexp_replace(col(col_name), r'\.', '').cast(spark_type))
+                    df = df.withColumn(
+                        "qtde_teorica",
+                        regexp_replace(
+                            trim(regexp_replace(col("qtde_teorica"), '"', '')), r'\.', ''
+                        ).cast("long")
+                    )
+                # Cast percentual_participacao                     
                 elif col_name == "percentual_participacao":
                     df = df.withColumn(col_name, regexp_replace(col(col_name), ",", ".").cast(spark_type))
+                # Cast others columns
                 else:
                     df = df.withColumn(col_name, col(col_name).cast(spark_type))
 
@@ -186,6 +195,29 @@ def load_ingestion_in_glue_table(glueContext, dyf, database_name, table_name):
 
     log.info(f"Data upload was sucessefuly!")
 
+def run_msck_repair(database, table, output_location):
+    try:
+        log.info(f"Running MSCK Repair in table - {database}.{table}")
+        athena = boto3.client('athena')
+        query = f"MSCK REPAIR TABLE {table}"
+        response = athena.start_query_execution(
+            QueryString=query,
+            QueryExecutionContext={'Database': database},
+            ResultConfiguration={'OutputLocation': output_location}
+        )
+        query_execution_id = response['QueryExecutionId']
+        # Aguarda a execução terminar (opcional)
+        while True:
+            result = athena.get_query_execution(QueryExecutionId=query_execution_id)
+            state = result['QueryExecution']['Status']['State']
+            if state in ['SUCCEEDED', 'FAILED', 'CANCELLED']:
+                log.info(f"Athena query state: {state}")
+                break
+            time.sleep(2)
+
+    except Exception as e:
+        log.error(f"Error while run msk repair in Athena: {e}")
+
 ## Utils
 def create_session(job_name):
     """
@@ -220,6 +252,7 @@ def main():
     parameters = [
         'JOB_NAME',
         'bucket_ingestion',
+        'bucket_results_athena',
         'object_key',
         'database_name',
         'table_name'
@@ -228,6 +261,7 @@ def main():
     
     job_name = args['JOB_NAME']
     bucket_ingestion = args['bucket_ingestion']
+    bucket_results_athena = args['bucket_results_athena']
     object_key = args['object_key']
     database_name = args['database_name']
     table_name = args['table_name']
@@ -252,6 +286,13 @@ def main():
 
     # Load
     load_ingestion_in_glue_table(glueContext, dyf, database_name, table_name)
+
+    run_msck_repair(
+        database=database_name,
+        table=table_name,
+        output_location=f's3://{bucket_results_athena}/'
+    )
+
 
 if __name__ == '__main__':
     main()
