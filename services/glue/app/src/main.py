@@ -13,6 +13,23 @@ from pyspark.sql.types import StringType, IntegerType, DoubleType, BooleanType, 
 from pyspark.sql.functions import regexp_replace
 from datetime import datetime
 
+# Log config
+class Logs:
+    def __init__(self, name="glue_job"):
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s [%(levelname)s] %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S"
+        )
+        self.logger = logging.getLogger(name)
+
+    def info(self, msg):
+        self.logger.info(msg)
+
+    def error(self, msg):
+        self.logger.error(msg)
+        raise Exception(msg)
+
 ## Extract 
 def get_catalog_schema(database, table):
     """
@@ -191,25 +208,7 @@ def create_session(job_name):
 def get_brasilia_date_str():
     tz = pytz.timezone('America/Sao_Paulo')
     today_str = datetime.now(tz).strftime("%Y%m%d")
-    return today_str
-
-class Logs:
-    def __init__(self, name="glue_job"):
-        logging.basicConfig(
-            level=logging.INFO,
-            format="%(asctime)s [%(levelname)s] %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S"
-        )
-        self.logger = logging.getLogger(name)
-
-    def info(self, msg):
-        self.logger.info(msg)
-
-    def error(self, msg):
-        self.logger.error(msg)
-        raise Exception(msg)
-    
-
+    return today_str  
 
 
 

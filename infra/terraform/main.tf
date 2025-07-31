@@ -17,6 +17,15 @@ resource "aws_s3_bucket" "lambda_artifacts" {
   }
 }
 
+# Bucket results Athena
+resource "aws_s3_bucket" "bucket_results_athena" {
+  bucket = var.bucket_results_athena_name
+
+  versioning {
+    enabled = true
+  }
+}
+
 
 # Configure the S3 bucket for storing Terraform state files
 terraform {
