@@ -14,7 +14,7 @@ variable "bucket_artifact_name" {
 variable "bucket_results_athena_name" {
   description = "The name of the S3 bucket for ETL ingestion"
   type        = string
-  default     = "bucket-techchallenge-results_athena-g222"
+  default     = "bucket-techchallenge-results-athena-g222"
 }
 
 variable "bucket_states_terraform_name" {
