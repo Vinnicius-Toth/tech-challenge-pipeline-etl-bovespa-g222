@@ -19,6 +19,8 @@ resource "aws_glue_job" "glue_job_etl" {
     "--job-bookmark-option" = "job-bookmark-disable"
     "--job_name"            = var.glue_job_name
     "--bucket_ingestion"  = "s3://${var.bucket_ingestao_etl_name}"
+    "--database_name"  = "db_ibovespa_data"
+    "--table_name"  = "tb_cotacao_ibovesta"
   }
   execution_class = "STANDARD" 
 }

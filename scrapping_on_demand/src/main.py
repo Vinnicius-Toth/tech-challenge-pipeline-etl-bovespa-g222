@@ -5,9 +5,17 @@ from selenium.webdriver.support.ui import Select
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import boto3
+import pytz
 import pandas as pd
 import time, os
 from io import StringIO
+from datetime import datetime
+
+def get_file_name():
+    tz = pytz.timezone('America/Sao_Paulo')
+    today_str = datetime.now(tz).strftime("%Y%m%d")
+
+    return f"{today_str}_raw_file.csv"
 
 def extract_selenium_scrapping(ingestion_type):
     if ingestion_type == 'daily':
@@ -89,7 +97,7 @@ def process_tables_and_upload(bucket_name, path_s3):
 
 # Parameters
 bucket_s3 = 'bucket-techchallenge-ingestao-bovespa-g222'
-path_s3 = 'raw_file.csv'
+path_s3 = get_file_name()
 
 # Start Ingestion
 process_tables_and_upload(bucket_s3, path_s3)
