@@ -42,7 +42,7 @@ def read_table_from_catalog(glueContext, database_name, table_name, anomesdia):
         dyf = glueContext.create_dynamic_frame.from_catalog(
             database=database_name,
             table_name=table_name,
-            push_down_predicate=anomesdia
+            push_down_predicate=f"anomesdia={anomesdia}"
         )
         log.info("Read table in Glue Catalog was a sucessefuly!")
         
