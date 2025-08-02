@@ -1,5 +1,5 @@
 resource "aws_glue_job" "glue_job_etl_aggregated" {
-  name     = var.glue_job_name
+  name     = var.glue_job_name_aggregated
   role_arn = "arn:aws:iam::569358226624:role/LabRole"
 
   command {
