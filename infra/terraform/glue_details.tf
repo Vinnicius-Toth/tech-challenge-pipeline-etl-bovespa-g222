@@ -1,4 +1,4 @@
-resource "aws_glue_job" "glue_job_etl" {
+resource "aws_glue_job" "glue_job_etl_details" {
   name     = var.glue_job_name
   role_arn = "arn:aws:iam::569358226624:role/LabRole"
 
