@@ -3,7 +3,7 @@ import boto3
 
 glue = boto3.client('glue')
 
-glue_job_name = 'glue_job_etl_ingestion_refined'
+glue_job_name = 'glue_job_etl_ingestion_ibovespa_details'
 
 def handler(event, context):
     for record in event.get('Records', []):
