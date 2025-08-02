@@ -23,10 +23,16 @@ variable "bucket_states_terraform_name" {
   default     = "bucket-techchallenge-states-terraform-g222"
 }
 
-variable "glue_job_name" {
+variable "glue_job_name_details" {
   description = "The name of glue job"
   type        = string
-  default     = "glue_job_etl_ingestion_refined"
+  default     = "glue_job_etl_ingestion_ibovespa_details"
+}
+
+variable "glue_job_name_aggregated" {
+  description = "The name of glue job"
+  type        = string
+  default     = "glue_job_etl_ingestion_ibovespa_aggregated"
 }
 
 # Configuracoes gerais

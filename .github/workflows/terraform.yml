@@ -67,8 +67,9 @@ jobs:
       - name: Upload Glue Job to S3
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          cd services/glue/app/src
-          aws s3 cp main.py s3://bucket-techchallenge-artifacts-g222/glue/app/src/main.py
+          cd services
+          aws s3 cp glue_details/app/src/main.py s3://bucket-techchallenge-artifacts-g222/glue_details/app/src/main.py
+          aws s3 cp glue_aggregated/app/src/main.py s3://bucket-techchallenge-artifacts-g222/glue_aggregated/app/src/main.py
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
