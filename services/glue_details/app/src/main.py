@@ -170,7 +170,7 @@ def add_partition_column_anomesdia(df):
         log.error("Error while adding partition anomesdia")
 
     log.info(f"Partition anomesdia add was sucessfuly - {today_str}")
-    return df
+    return df, today_str
 
 ## Load
 def load_ingestion_in_glue_table(glueContext, dyf, database_name, table_name):
@@ -242,6 +242,16 @@ def get_brasilia_date_str():
     today_str = datetime.now(tz).strftime("%Y%m%d")
     return today_str  
 
+def start_glue_job_aggregated(job_name, anomesdia):
+    glue_client = boto3.client('glue')
+    response = glue_client.start_job_run(
+        JobName=job_name,
+        Arguments={
+            '--anomesdia': anomesdia
+        }
+    )
+    log.info(f"Started Glue Job {job_name} with run id: {response['JobRunId']}")
+    return response
 
 
 def main():
@@ -251,6 +261,7 @@ def main():
     # Get parameters
     parameters = [
         'JOB_NAME',
+        'job_name_aggregated',
         'bucket_ingestion',
         'bucket_results_athena',
         'object_key',
@@ -260,6 +271,7 @@ def main():
     args = getResolvedOptions(sys.argv, parameters)
     
     job_name = args['JOB_NAME']
+    job_name_aggregated = args['job_name_aggregated']
     bucket_ingestion = args['bucket_ingestion']
     bucket_results_athena = args['bucket_results_athena']
     object_key = args['object_key']
@@ -280,7 +292,7 @@ def main():
  
     df = cast_columns(df, catalog_schema)
 
-    df = add_partition_column_anomesdia(df)
+    df, anomesdia = add_partition_column_anomesdia(df)
     
     dyf = convert_df_to_dyf(df, glueContext)
 
@@ -292,6 +304,8 @@ def main():
         table=table_name,
         output_location=f's3://{bucket_results_athena}/'
     )
+
+    start_glue_job_aggregated(job_name_aggregated, anomesdia)
 
 
 if __name__ == '__main__':
