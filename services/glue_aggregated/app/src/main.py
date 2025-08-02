@@ -157,7 +157,6 @@ def main():
     # Get parameters
     parameters = [
         'JOB_NAME',
-        'bucket_ingestion',
         'bucket_results_athena',
         'database_name',
         'table_name_read',
@@ -167,7 +166,6 @@ def main():
     args = getResolvedOptions(sys.argv, parameters)
     
     job_name = args['JOB_NAME']
-    bucket_ingestion = args['bucket_ingestion']
     bucket_results_athena = args['bucket_results_athena']
     database_name = args['database_name']
     table_name_read = args['table_name_read']

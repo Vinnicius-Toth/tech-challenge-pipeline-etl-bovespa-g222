@@ -18,6 +18,7 @@ resource "aws_glue_job" "glue_job_etl_details" {
     "--job-language"      = "python"
     "--job-bookmark-option" = "job-bookmark-disable"
     "--job_name"            = var.glue_job_name_details
+    "--job_name_aggregated" = var.glue_job_name_aggregated
     "--bucket_ingestion"  = var.bucket_ingestao_etl_name
     "--bucket_results_athena"  = var.bucket_results_athena_name
     "--database_name"  = "db_ibovespa_data"
