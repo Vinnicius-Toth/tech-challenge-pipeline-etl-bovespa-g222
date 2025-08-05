@@ -101,6 +101,20 @@ Para mais detalhes, consulte o workflow em [.github/workflows/terraform.yml](.gi
 
 ---
 
+## 🧰 Tecnologias Utilizadas
+
+- Python 3.11+
+- Spark
+- Selenium
+- BeautifulSoup4
+- Pandas
+- AWS Glue
+- AWS Lambda
+- Terraform
+- GitHub Actions
+
+---
+
 ## 👨‍💻 Desenvolvedores
 
 - Vinnicius Toth - vinni.toth@gmail.com
